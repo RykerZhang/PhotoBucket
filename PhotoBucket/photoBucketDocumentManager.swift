@@ -42,11 +42,23 @@ class photoBucketDocumentManager{
             kCreateTime: Timer.init(),]){
                 err in
                 if let err = err{
-                    print("Error uodateing: \(err)")
+                    //print("Error uodateing: \(err)")
                 }else{
-                    print("Document updated")
+                   // print("Document updated")
                 }
             }
+    }
+    func updatePhotoUrl(PhotoUrl: String){
+
+        _collectionRef.document(latestPhoto!.documentId!).updateData([
+            kPhotoURL: PhotoUrl,
+        ]){err in
+            if let err = err{
+                print("Error updating document:\(err)")
+            }else{
+                print("Name successfully updated")
+            }
+        }
     }
 
 }

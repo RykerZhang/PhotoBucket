@@ -14,7 +14,7 @@ class LoginViewController: UIViewController{
 
     @IBOutlet weak var emailText: UITextField!
     @IBOutlet weak var passwordText: UITextField!
-    
+    var rosefireName: String?
     var loginHandle : AuthStateDidChangeListenerHandle?
     
     
@@ -48,10 +48,10 @@ class LoginViewController: UIViewController{
         let password = passwordText.text!
         print("login user")
         AuthManager.shared.loginExistingEmailPasswordUser(email: email, password: password)
-        loginHandle = AuthManager.shared.addLoginObserver {
-            print("TODO: Fire the showlist segue! there is already someone signed in ")
-            self.performSegue(withIdentifier: kshowListSegue, sender: self)
-        }
+//        loginHandle = AuthManager.shared.addLoginObserver {
+//            print("TODO: Fire the showlist segue! there is already someone signed in ")
+//            self.performSegue(withIdentifier: kshowListSegue, sender: self)
+//        }
     }
     @IBAction func PressedRoseFire(_ sender: Any) {
         Rosefire.sharedDelegate().uiDelegate = self
@@ -97,6 +97,15 @@ class LoginViewController: UIViewController{
             
             AuthManager.shared.signInWithGoogleCredential(credential)
 
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        print("Segue identifier \(segue.identifier)")
+        if segue.identifier == kshowListSegue{
+            print("NAME = \(rosefireName ?? AuthManager.shared.currentUser!.displayName)")
+            print("photourl = \(AuthManager.shared.currentUser!.photoURL)")
+            UserManager.shared.addNewUserMaybe(uid: AuthManager.shared.currentUser!.uid, name: rosefireName ?? AuthManager.shared.currentUser!.displayName, photoUrl: AuthManager.shared.currentUser!.photoURL?.absoluteString)
         }
     }
 }

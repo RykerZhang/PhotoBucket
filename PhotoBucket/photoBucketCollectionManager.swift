@@ -28,12 +28,12 @@ class photoBucketCollectionManager{
         
          return query.addSnapshotListener{querySnapshot, error in
             guard let documents = querySnapshot?.documents else{
-                print("error")
+               //print("error")
                 return
             }
             self.latestPhotoBuckets.removeAll()
             for document in documents{
-                print("\(document.documentID) => \(document.data())")
+              //  print("\(document.documentID) => \(document.data())")
                 self.latestPhotoBuckets.append(photoBucket(documentSnapshot:document))
             }
             changeListener()
@@ -51,16 +51,16 @@ class photoBucketCollectionManager{
             kPhotoBucketUID: AuthManager.shared.currentUser!.uid
         ]){ err in
             if let err = err{
-                print("Error adding document \(err)")
+                //print("Error adding document \(err)")
             }
         }
     }
     func delete(_ documentId: String){
         _collectionRef.document(documentId).delete() { err in
             if let err = err {
-                print("Error removing document: \(err)")
+               // print("Error removing document: \(err)")
             } else {
-                print("Document successfully removed!")
+                //print("Document successfully removed!")
             }
         }
     }

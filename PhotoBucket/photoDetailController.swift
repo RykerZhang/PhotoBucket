@@ -14,8 +14,12 @@ class photoDetailController: UIViewController{
     //var tphotoBucket : photoBucket?
     var photoListenerRegistration: ListenerRegistration?
     var photoBucketDocumentId: String!
+    var userListenerRegistration: ListenerRegistration?
 
+    @IBOutlet weak var stackView: UIStackView!
+    @IBOutlet weak var imageView: UIImageView!
     
+    @IBOutlet weak var nameLabel: UILabel!
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.edit, target: self, action: #selector(showEditDialog))
@@ -37,6 +41,14 @@ class photoDetailController: UIViewController{
             print("TODO")
             self.updateView()
             self.showOrHideEditButton()
+            
+            self.stackView.isHidden = true
+            if let authorUid = photoBucketDocumentManager.shared.latestPhoto?.authorUid{
+                UserManager.shared.stopListening(self.userListenerRegistration)
+                self.userListenerRegistration = UserManager.shared.startListening(for: authorUid){
+                    self.updateAuthorBox()
+                }
+            }
         }
     }
     
@@ -50,19 +62,20 @@ class photoDetailController: UIViewController{
     //TODO: Update the view using the manager's data
         if let photo = photoBucketDocumentManager.shared.latestPhoto{
             captionLabel.text = photo.caption
-            if let imgUrl = URL(string: photo.url) {
-                    DispatchQueue.global().async { // Download in the background
-                      do {
-                          print("The url is :\(photo.url)")
-                        let data = try Data(contentsOf: imgUrl)
-                        DispatchQueue.main.async { // Then update on main thread
-                          self.photoDisplay.image = UIImage(data: data)
-                        }
-                      } catch {
-                        print("Error downloading image: \(error)")
-                      }
-                    }
-                  }
+//            if let imgUrl = URL(string: photo.url) {
+//                    DispatchQueue.global().async { // Download in the background
+//                      do {
+//                          print("The url is :\(photo.url)")
+//                        let data = try Data(contentsOf: imgUrl)
+//                        DispatchQueue.main.async { // Then update on main thread
+//                          self.photoDisplay.image = UIImage(data: data)
+//                        }
+//                      } catch {
+//                        print("Error downloading image: \(error)")
+//                      }
+//                    }
+//                  }
+            ImageUtils.load(imageView: photoDisplay, from: photoBucketDocumentManager.shared.latestPhoto!.url)
 
 
         }
@@ -97,5 +110,13 @@ class photoDetailController: UIViewController{
         alertController.addAction(cancelAction)
         present(alertController, animated: true, completion: nil)
         updateView()
+    }
+    
+    func updateAuthorBox(){
+        self.stackView.isHidden   = UserManager.shared.name.isEmpty && UserManager.shared.photoUrl.isEmpty
+        nameLabel.text = UserManager.shared.name
+        if !UserManager.shared.photoUrl.isEmpty{
+            ImageUtils.load(imageView: imageView, from: UserManager.shared.photoUrl)
+        }
     }
 }

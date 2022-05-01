@@ -18,6 +18,11 @@ class photoBucket{
         self.url = url
     }
     
+    init(caption:String){
+        self.caption = caption
+        self.url = ""
+    }
+    
     init(documentSnapshot: DocumentSnapshot){
         self.documentId = documentSnapshot.documentID
         let data = documentSnapshot.data()
